@@ -107,7 +107,7 @@ export default {
       list: {},
       playTwoFlag: false, // 播放两集标志
       countdownTxt: '未开启',
-      playNum: 0
+      playNum: -1
     }
   },
   methods: {
@@ -122,7 +122,7 @@ export default {
 
         if (remainTime <= 0) {
           clearInterval(intervalId);
-          this.$refs.audioRef.pause()
+          that.$refs.audioRef.pause()
         } else {
           that.countdownTxt = `${Math.floor(remainTime / 60)}分${remainTime % 60}秒`;
         }
@@ -183,12 +183,17 @@ export default {
       }
       // 播 2 或 5 集
       if (this.timeIndex === '3' || this.timeIndex === '4') {
-        if (this.playNum < 0) {
+        console.log(this.playNum,888);
+        if (this.playNum === 0) {
           this.$refs.audioRef.pause()
-          this.playNum = 0
+          this.playNum =-1
           return
         } else {
-          this.countdownTxt = this.playNum + '集'
+          if(this.playNum === -1){
+            this.countdownTxt = '无效'
+          }else{
+            this.countdownTxt = this.playNum + '集'
+          }
         }
       }
 
