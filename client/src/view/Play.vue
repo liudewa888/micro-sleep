@@ -11,8 +11,8 @@
         <el-tag type="info">播放剩余: {{ countdownTxt }}</el-tag>
       </div>
       <div class="center">
-        <audio id="audio" preload="auto" :src="list.link" @ended="ended" ref="audioRef" controls :loop="audioLoop"
-          controlslist="nodownload">
+        <audio id="audio" preload="auto" :src="this.list.link" @ended="ended" ref="audioRef" controls :loop="audioLoop"
+          controlslist="nodownload" @error="audioError" @canplay="canPlay">
         </audio>
       </div>
 
@@ -107,7 +107,8 @@ export default {
       list: {},
       playTwoFlag: false, // 播放两集标志
       countdownTxt: '未开启',
-      playNum: -1
+      playNum: -1,
+      errorNum: 0
     }
   },
   methods: {
@@ -183,15 +184,15 @@ export default {
       }
       // 播 2 或 5 集
       if (this.timeIndex === '3' || this.timeIndex === '4') {
-        console.log(this.playNum,888);
+        console.log(this.playNum, 888);
         if (this.playNum === 0) {
           this.$refs.audioRef.pause()
-          this.playNum =-1
+          this.playNum = -1
           return
         } else {
-          if(this.playNum === -1){
+          if (this.playNum === -1) {
             this.countdownTxt = '无效'
-          }else{
+          } else {
             this.countdownTxt = this.playNum + '集'
           }
         }
@@ -244,19 +245,29 @@ export default {
       ).then(res => {
         const { result } = res.data
         this.list = result[0]
-        // this.list.link =mp3
         this.$nextTick(() => {
           this.$refs.audioRef.load()
           this.$router.replace({
             name: 'play',
             query: { number: this.number, id: this.id }
           })
-          setTimeout(() => {
-            this.$refs.audioRef.play()
-          }, 500);
 
         })
       })
+    },
+    audioError() {
+      this.errorNum++
+      if (this.errorNum > 8) {
+        this.errorNum = -1
+      } else if (this.errorNum > 3) {
+        this.nextSectionClick()
+      } else if (this.errorNum > 0) {
+        this.getSectionInfo()
+      }
+    },
+    canPlay() {
+      this.errorNum = 0
+      this.$refs.audioRef.play()
     }
   },
   created() {

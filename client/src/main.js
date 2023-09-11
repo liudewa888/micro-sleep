@@ -14,7 +14,7 @@ const app = createApp(App)
 
 axios.defaults.baseURL = '/api'
 app.config.globalProperties.request = axios // 全局挂载axios
-app.config.globalProperties.ImgBaseLink = '/ImgBaseLink/' //全局图片地址
+app.config.globalProperties.ImgBaseLink = '/image/' //全局图片地址
 app.use(router)
 app.use(ElementPlus)
 
